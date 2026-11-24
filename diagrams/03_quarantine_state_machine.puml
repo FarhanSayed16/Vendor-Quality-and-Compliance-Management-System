@@ -1,0 +1,171 @@
+@startuml VQCMS_Batch_Quarantine_Lifecycle
+' ==============================================================================
+'  VQCMS - XII | Batch Quarantine & Quality Lifecycle State Machine
+'  From Dock Receipt -> QC Inspection -> Pass or Quarantine -> Settlement
+' ==============================================================================
+
+skinparam backgroundColor #FAFBFC
+skinparam roundcorner 14
+skinparam shadowing true
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+
+skinparam state {
+    FontSize 12
+    AttributeFontSize 10
+    BackgroundColor #FFFFFF
+    BorderColor #475569
+    BorderThickness 1.5
+    ArrowColor #334155
+    ArrowThickness 1.5
+}
+
+' --- HEADER ---
+header
+<font size=20 color="#1E293B"><b>Batch Quality Lifecycle & Quarantine State Machine</b></font>
+<font size=12 color="#64748B">Component Lot Traceability: Dock Receipt to Assembly Pass or Debit Memo Settlement</font>
+end header
+
+footer <font color="#94A3B8" size=9>VQCMS-XII | Team 12 | <color:#059669>Green = Passed</color> | <color:#D97706>Amber = Pending</color> | <color:#DC2626>Red = Failed/Quarantine</color></font>
+
+' ==============================================================================
+' ENTRY
+' ==============================================================================
+[*] -[#334155,bold]-> ORDERED
+
+state "ORDERED" as ORDERED #DBEAFE ##3B82F6 {
+    ORDERED : <&document>  PO lines created
+    ORDERED : Criticality Tier (A/B/C) assigned
+    ORDERED : Expected delivery date set
+}
+
+ORDERED -[#3B82F6,bold]-> IN_TRANSIT : Supplier ships batch lot
+
+state "IN_TRANSIT" as IN_TRANSIT #E0E7FF ##6366F1 {
+    IN_TRANSIT : <&transfer>  Freight in transit
+    IN_TRANSIT : Carrier tracking active
+    IN_TRANSIT : Bill of Lading generated
+}
+
+IN_TRANSIT -[#6366F1,bold]-> RECEIVED_AT_DOCK : Arrives at plant dock bay
+
+state "RECEIVED AT DOCK" as RECEIVED_AT_DOCK #E0F2FE ##0284C7 {
+    RECEIVED_AT_DOCK : <&box>  Dock receipt recorded
+    RECEIVED_AT_DOCK : Batch lot number scanned
+    RECEIVED_AT_DOCK : Piece count verified
+}
+
+RECEIVED_AT_DOCK -[#0284C7,bold]-> UNDER_QC_INSPECTION : Assigned to certified inspector
+
+' ==============================================================================
+' COMPOSITE STATE: QC INSPECTION
+' ==============================================================================
+state "UNDER QC INSPECTION" as UNDER_QC_INSPECTION #FEF9C3 ##D97706 {
+
+    state "CoA Document\nVerification" as check_coa #FEF3C7 ##D97706
+    state "Dimensional &\nPhysical Tolerance" as check_dim #FEF3C7 ##D97706
+    state "Metallurgical &\nUltrasonic Scan" as check_metal #FEF3C7 ##D97706
+
+    [*] -[#D97706]-> check_coa
+    check_coa -[#D97706]-> check_dim
+    check_dim -[#D97706]-> check_metal
+}
+
+' ==============================================================================
+' BRANCH A: QUALITY PASSED (Green Flow)
+' ==============================================================================
+UNDER_QC_INSPECTION -[#059669,bold]-> PASSED : <color:#059669>**PASS**</color> — Defects within tolerance
+
+state "PASSED & ACCEPTED" as PASSED #D1FAE5 ##059669 {
+    PASSED : <&check>  PPM trigger updates score
+    PASSED : Green pass tag applied
+    PASSED : Lot cleared for assembly
+}
+
+PASSED -[#059669,bold]-> RELEASED
+
+state "RELEASED TO ASSEMBLY" as RELEASED #ECFDF5 ##10B981 {
+    RELEASED : <&cog>  Installed in Engine / Transmission
+    RELEASED : Production tracking activated
+}
+
+RELEASED -[#10B981,bold]-> [*]
+
+' ==============================================================================
+' BRANCH B: QUALITY FAILED (Red Flow)
+' ==============================================================================
+UNDER_QC_INSPECTION -[#DC2626,bold]-> QUARANTINE_HOLD : <color:#DC2626>**FAIL**</color> — Critical defect detected
+
+state "QUARANTINE HOLD" as QUARANTINE_HOLD #FEE2E2 ##DC2626 {
+
+    state "<&lock-locked> Locked in\nStorage Bay" as bay_lock #FECACA ##DC2626
+    state "<&bell> Audit Trigger\nFires" as auto_audit #FFE4E6 ##E11D48
+    state "<&clipboard> 8D Root Cause\nInvestigation" as root_cause #FFF1F2 ##F43F5E
+
+    [*] -[#DC2626]-> bay_lock
+    bay_lock -[#DC2626]-> auto_audit
+    auto_audit -[#DC2626]-> root_cause
+}
+
+' --- OPTIONAL: LINE STOPPAGE ---
+QUARANTINE_HOLD -[#991B1B,bold]-> LINE_STOPPAGE : Defective parts caused line halt
+
+state "LINE STOPPAGE INCIDENT" as LINE_STOPPAGE #FCA5A5 ##991B1B {
+    LINE_STOPPAGE : <&warning>  Record downtime minutes
+    LINE_STOPPAGE : Calculate hourly loss
+    LINE_STOPPAGE : Root cause documented
+}
+
+' --- RMA ---
+QUARANTINE_HOLD -[#D97706,bold]-> RMA_CLAIM : RMA issued to vendor
+LINE_STOPPAGE -[#D97706]-> RMA_CLAIM : Downtime cost added
+
+state "RMA CLAIM INITIATED" as RMA_CLAIM #FEF3C7 ##D97706 {
+    RMA_CLAIM : <&envelope-closed>  Formal return claim filed
+    RMA_CLAIM : Quarantined value committed
+    RMA_CLAIM : Vendor notified
+}
+
+RMA_CLAIM -[#7C3AED,bold]-> SETTLEMENT : Vendor reviews
+
+' ==============================================================================
+' COMPOSITE STATE: VENDOR SETTLEMENT
+' ==============================================================================
+state "SUPPLIER SETTLEMENT" as SETTLEMENT #F5F3FF ##7C3AED {
+
+    state "<&x> Disputed\nby Vendor" as disp #EDE9FE ##7C3AED
+    state "<&check> Approved\nby Vendor" as app  #D1FAE5 ##059669
+
+    [*] --> disp
+    [*] --> app
+    disp -[#059669]-> app : Contract evidence\nenforced
+}
+
+SETTLEMENT -[#166534,bold]-> DEBIT_MEMO : Debit Memo generated
+
+state "PENALTY DEBIT MEMO" as DEBIT_MEMO #BBF7D0 ##166534 {
+    DEBIT_MEMO : <&dollar>  Base penalty + downtime fee
+    DEBIT_MEMO : Invoice number assigned
+    DEBIT_MEMO : Linked to RMA & incident
+}
+
+' --- PHYSICAL DISPOSITION ---
+state "MATERIAL DISPOSITION" as DISPOSITION #E2E8F0 ##475569 {
+    state "Returned to Vendor" as ret #F1F5F9
+    state "Scrapped On-Site" as scr #F1F5F9
+}
+
+DEBIT_MEMO -[#475569]-> DISPOSITION : Physical lot resolved
+
+' --- FINAL SETTLEMENT ---
+DEBIT_MEMO -[#166534,bold]-> SETTLED : Deducted from vendor payables
+
+state "FULLY SETTLED" as SETTLED #86EFAC ##059669 {
+    SETTLED : <&check>  100% financial recovery
+    SETTLED : Vendor rating adjusted
+    SETTLED : Audit trail closed
+}
+
+SETTLED -[#059669,bold]-> [*]
+
+@enduml

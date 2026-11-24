@@ -1,0 +1,126 @@
+@startuml VQCMS_Penalty_Enforcement_Sequence
+' ==============================================================================
+'  VQCMS - XII | Downtime Incident & Penalty Enforcement Sequence
+'  Assembly Line Stoppage -> Quarantine -> RMA -> Automated Debit Memo
+' ==============================================================================
+
+skinparam backgroundColor #FAFBFC
+skinparam roundcorner 10
+skinparam shadowing true
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+skinparam MaxMessageSize 280
+skinparam responseMessageBelowArrow true
+
+skinparam sequence {
+    ArrowThickness 1.5
+    ParticipantBorderThickness 1.5
+    BoxBorderColor #94A3B8
+    DividerBackgroundColor #F1F5F9
+    DividerBorderColor #CBD5E1
+    DividerFontColor #334155
+    DividerFontStyle bold
+    GroupBorderColor #7C3AED
+    GroupBackgroundColor #FAF5FF
+    GroupHeaderFontColor #5B21B6
+    LifeLineBorderColor #94A3B8
+    LifeLineBackgroundColor #F8FAFC
+}
+
+autonumber "<b>[#]</b>"
+
+' --- HEADER ---
+header
+<font size=18 color="#1E293B"><b>Downtime Incident & Penalty Enforcement Sequence</b></font>
+<font size=11 color="#64748B">Factory Line Stoppage  ->  Quarantine Hold  ->  RMA Claim  ->  Automated Debit Memo  ->  Settlement</font>
+end header
+
+footer <font color="#94A3B8" size=9>VQCMS-XII | Precision Auto Parts | Team 12 | Real Scenario: BorgWarner Lot LOT-2026-BORG-7890</font>
+
+' ==============================================================================
+' PARTICIPANTS — Distinct Colors Per Role
+' ==============================================================================
+box "Assembly Line & QC Operations" #DBEAFE
+    actor    "Assembly\nOperator"      as WORKER #3B82F6
+    participant "QC Inspector\n(Level 3 Lead)" as QC #059669
+end box
+
+box "Core Database Engine" #D1FAE5
+    database "VQCMS\nDatabase" as DB #059669
+    collections "Quarantine\nBay Q-DET-04" as BAY #DC2626
+end box
+
+box "Procurement & Vendor Commercial" #FEF3C7
+    participant "Procurement\nOfficer" as PROC #D97706
+    actor    "Supplier Rep\n(BorgWarner)" as VENDOR #E11D48
+end box
+
+' ==============================================================================
+' PHASE 1 — DOCK RECEIVING & INSPECTION FAILURE
+' ==============================================================================
+== <color:#3B82F6><b>Phase 1 — Dock Receiving & Sample Failure</b></color> ==
+
+VENDOR -[#E11D48]> DB : Shipment delivered at dock\n(Lot **LOT-2026-BORG-7890** | 1,000 units)
+activate DB #D1FAE5
+
+QC -[#059669]> DB : Conduct batch inspection\n(Sample: 200 | Found: **14 defective**)
+    DB -[#D97706]> DB : **trg_auto_calculate_ppm** fires\nPPM = (14/200) × 1,000,000 = **70,000**
+    DB -[#DC2626]> DB : Contract check: Limit = 90 PPM\nResult: **SLA_BREACH_PENALTY**
+    DB -[#DC2626]> BAY : Move 1,000 units to quarantine
+    activate BAY #FEE2E2
+    DB -[#7C3AED]> DB : **trg_audit_quarantine_insert** fires\nImmutable entry in audit log
+
+deactivate DB
+
+' ==============================================================================
+' PHASE 2 — ASSEMBLY LINE STOPPAGE
+' ==============================================================================
+== <color:#DC2626><b>Phase 2 — Assembly Line Incident & Stoppage</b></color> ==
+
+WORKER -[#DC2626]> WORKER : Defective actuator jams\nDetroit Engine Line #1
+WORKER -[#3B82F6]> DB : Log line stoppage\n(10:15 AM → 12:45 PM = **150 minutes**)
+activate DB #D1FAE5
+    DB -[#D97706]> DB : Insert **downtime_incidents**\nStoppage cost = (150/60) × \$6,000\n= **\$15,000.00**
+deactivate DB
+
+' ==============================================================================
+' PHASE 3 — WARRANTY CROSS-REFERENCE & RMA
+' ==============================================================================
+== <color:#D97706><b>Phase 3 — Warranty Cross-Reference & RMA Claim</b></color> ==
+
+PROC -[#D97706]> DB : Execute **Query 2**: Cross-ref\nbatch cert with contract terms
+activate DB #D1FAE5
+    DB --[#059669]> PROC : Contract CTR-2025-BORG-01\n100% warranty + \$10K base penalty
+deactivate DB
+
+PROC -[#D97706]> DB : Generate **RMA-2026-BORG-002**\nClaimed: **\$88,000.00** (Full Refund)
+PROC -[#E11D48]> VENDOR : Transmit formal RMA notice\nAttach CoA failure evidence
+
+' ==============================================================================
+' PHASE 4 — AUTOMATED PENALTY DEBIT MEMO
+' ==============================================================================
+== <color:#7C3AED><b>Phase 4 — Automated Penalty Invoice Generation</b></color> ==
+
+group Automated Financial Engine
+    PROC -[#7C3AED]> DB : Execute **Query 3**: Generate\nPenalty Debit Memo
+    activate DB #D1FAE5
+        DB -[#166534]> DB : Insert **penalty_invoices**\nBase: \$10,000 | Downtime: \$15,000\n**Total: \$25,000 (DEBIT-2026-002)**
+    deactivate DB
+end
+
+PROC -[#E11D48]> VENDOR : Issue Debit Memo **DEBIT-2026-002**\nwith 150-min downtime evidence
+VENDOR -[#059669]> PROC : Acknowledge liability\nApprove credit deduction
+
+' ==============================================================================
+' PHASE 5 — RECONCILIATION & AUDIT CLOSURE
+' ==============================================================================
+== <color:#059669><b>Phase 5 — Reconciliation & Audit Closure</b></color> ==
+
+PROC -[#059669]> DB : Update settlement_status = **APPROVED**\nUpdate payment = **DEDUCTED_FROM_PAYABLE**
+activate DB #D1FAE5
+    DB -[#059669]> DB : **v_financial_recovery_summary** refreshes\nTotal = \$88K (RMA) + \$25K (Penalty)\n= **\$113,000 recovered**
+    DB -[#7C3AED]> DB : Audit trail sealed\nTimestamp + User ID logged
+deactivate DB
+deactivate BAY
+
+@enduml
