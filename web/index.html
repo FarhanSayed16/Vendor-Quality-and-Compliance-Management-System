@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VQCMS - XII | Precision Auto Parts — Vendor Quality & Compliance Management System</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <!-- sql.js WebAssembly CDN -->
+  <script src="https://sql.js.org/dist/sql-wasm.js"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom Design System Stylesheet -->
+  <link rel="stylesheet" href="css/custom.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              500: '#0284c7',
+              900: '#0b1120',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100/80 text-slate-800 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white">
+
+  <!-- =========================================================================
+       1. TOP COMMAND HEADER (Automotive OEM Command Center)
+       ========================================================================= -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 shadow-2xl sticky top-0 z-40 backdrop-blur-md bg-slate-900/95">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand & Project Meta -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20 border border-white/20">
+          <span class="text-xl">⚙️</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+              <span>PRECISION AUTO PARTS</span>
+              <span class="text-cyan-400 text-xs font-mono font-normal px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800/60">VQCMS-XII</span>
+            </h1>
+            <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Team 12</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Automotive OEM Multi-Plant Quality Telemetry · SEM I DBMS Project</p>
+        </div>
+      </div>
+
+      <!-- Multi-Plant Global Network Status -->
+      <div class="hidden xl:flex items-center gap-2 text-xs">
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300">
+          <span>🇺🇸</span> <span class="font-semibold text-slate-200">Detroit</span> <span class="text-emerald-400 font-mono text-[11px]">● Online</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300">
+          <span>🇩🇪</span> <span class="font-semibold text-slate-200">Stuttgart</span> <span class="text-emerald-400 font-mono text-[11px]">● Online</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300">
+          <span>🇮🇳</span> <span class="font-semibold text-slate-200">Chennai</span> <span class="text-emerald-400 font-mono text-[11px]">● Online</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300">
+          <span>🇨🇳</span> <span class="font-semibold text-slate-200">Shanghai</span> <span class="text-emerald-400 font-mono text-[11px]">● Online</span>
+        </div>
+      </div>
+
+      <!-- Database Engine Connection Pill -->
+      <div class="flex items-center gap-3">
+        <div id="db-status" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 shadow-inner">
+          <span class="pulse-dot"></span>
+          <span>Connecting SQLite WASM…</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-1 text-[11px] font-mono text-slate-400 bg-slate-800/50 px-2 py-1 rounded border border-slate-800">
+          <span>Keys:</span> <kbd class="px-1 rounded bg-slate-700 text-slate-200">1</kbd>–<kbd class="px-1 rounded bg-slate-700 text-slate-200">6</kbd>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========================================================================
+         2. TAB NAVIGATION BAR (Sticky Sub-header)
+         ========================================================================= -->
+    <div class="bg-slate-900/90 border-t border-slate-800/80 px-4 sm:px-6">
+      <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto py-2 gap-2 scrollbar-none">
+        <div class="flex items-center gap-1.5 min-w-max">
+          <button id="btn-overview" class="nav-tab-btn active" onclick="switchTab('overview')">
+            <span>📋</span> <span>Executive Overview</span> <span class="text-[10px] opacity-60 font-mono">[1]</span>
+          </button>
+          <button id="btn-schema" class="nav-tab-btn" onclick="switchTab('schema')">
+            <span>🗄️</span> <span>Data Model & Schema</span> <span class="text-[10px] opacity-60 font-mono">[2]</span>
+          </button>
+          <button id="btn-workbench" class="nav-tab-btn" onclick="switchTab('workbench')">
+            <span>⚡</span> <span>Live SQL Workbench</span> <span class="text-[10px] opacity-60 font-mono">[3]</span>
+          </button>
+          <button id="btn-telemetry" class="nav-tab-btn" onclick="switchTab('telemetry')">
+            <span>📊</span> <span>Quality Telemetry</span> <span class="text-[10px] opacity-60 font-mono">[4]</span>
+          </button>
+          <button id="btn-audit" class="nav-tab-btn" onclick="switchTab('audit')">
+            <span>🔍</span> <span>Audit & Containment</span> <span class="text-[10px] opacity-60 font-mono">[5]</span>
+          </button>
+          <button id="btn-viva" class="nav-tab-btn" onclick="switchTab('viva')">
+            <span>🎓</span> <span>Viva Defense</span> <span class="text-[10px] opacity-60 font-mono">[6]</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       3. MAIN DISPLAY CONTAINER (Multi-Tab Single Page App)
+       ========================================================================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
+
+    <!-- =======================================================================
+         TAB 1: EXECUTIVE OVERVIEW & CRISIS ANALYSIS
+         ======================================================================= -->
+    <section id="tab-overview" class="space-y-6">
+      
+      <!-- Crisis Header Hero Card -->
+      <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-700/80 relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30 mb-3">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              Critical Automotive Supply Chain Case Study
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              The 14% Assembly Line Downtime Crisis
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base mt-2 leading-relaxed">
+              Precision Auto Parts sources <strong>4,200 engine & transmission components</strong> from <strong>185 global suppliers</strong> across Detroit, Stuttgart, Chennai, and Shanghai. Defect surges on active robotic assembly lines caused a <strong>14% factory downtime spike</strong>. Batch certificates were locked in isolated Excel workbooks—preventing procurement from linking defective lots with supplier contracts to enforce warranty recovery or charge back downtime costs.
+            </p>
+          </div>
+          <div class="flex-shrink-0 bg-slate-800/80 p-5 rounded-xl border border-slate-700/80 backdrop-blur text-center lg:text-left min-w-[240px]">
+            <div class="text-xs uppercase font-bold text-slate-400 tracking-wider">Financial Recovery Impact</div>
+            <div class="text-3xl font-black text-emerald-400 mt-1">$127,000</div>
+            <div class="text-xs text-slate-300 mt-1">Total Warranty & Penalties Recovered</div>
+            <div class="mt-3 pt-3 border-t border-slate-700 text-[11px] text-slate-400 flex items-center justify-between">
+              <span>Recovery Rate:</span>
+              <span class="text-emerald-400 font-bold font-mono">100% of Settled Claims</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Crisis Cause & Effect Flow -->
+        <div class="mt-6 pt-6 border-t border-slate-700/80 grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60">
+            <div class="font-bold text-slate-200">1. Siloed Excel Spreadsheets</div>
+            <p class="text-slate-400 mt-0.5">Isolated inspection certs across 4 facilities</p>
+          </div>
+          <div class="p-3 rounded-lg bg-rose-950/40 border border-rose-800/40">
+            <div class="font-bold text-rose-300">2. Defect Influx (65k PPM)</div>
+            <p class="text-rose-200/80 mt-0.5">BorgWarner & ZF breach contractual SLA limits</p>
+          </div>
+          <div class="p-3 rounded-lg bg-rose-950/40 border border-rose-800/40">
+            <div class="font-bold text-rose-300">3. 14% Line Stoppage</div>
+            <p class="text-rose-200/80 mt-0.5">Detroit & Stuttgart lines frozen (240 mins downtime)</p>
+          </div>
+          <div class="p-3 rounded-lg bg-blue-950/40 border border-blue-800/40">
+            <div class="font-bold text-cyan-300">4. VQCMS 3NF Centralization</div>
+            <p class="text-blue-200/80 mt-0.5">Engine-level triggers, domain checks & ACID integrity</p>
+          </div>
+          <div class="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/40">
+            <div class="font-bold text-emerald-300">5. Automated Recovery</div>
+            <p class="text-emerald-200/80 mt-0.5">$39,000 debit memos + $88,000 RMA settlement</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 Key Telemetry Metric Cards -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Live Database Key Performance Indicators</h3>
+          <span class="text-xs text-slate-400">Live query metrics from vqcms.db</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          
+          <div class="metric-card" style="--card-accent: #38bdf8;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Components Cataloged</div>
+            <div id="kpi-components" class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">10</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-blue-600 font-semibold">Tier A/B/C</span> · Engine & Gearbox
+            </div>
+          </div>
+
+          <div class="metric-card" style="--card-accent: #6366f1;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Audited Suppliers</div>
+            <div id="kpi-suppliers" class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">8</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-indigo-600 font-semibold">Tier-1 & 2</span> · Global OEM Base
+            </div>
+          </div>
+
+          <div class="metric-card" style="--card-accent: #10b981;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Manufacturing Plants</div>
+            <div id="kpi-plants" class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">4</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-emerald-600 font-semibold">Detroit · Stuttgart</span> · Chennai · Shanghai
+            </div>
+          </div>
+
+          <div class="metric-card" style="--card-accent: #ef4444;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Line Stoppage</div>
+            <div id="kpi-downtime" class="text-2xl sm:text-3xl font-black text-rose-600 mt-1">240 min</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-rose-600 font-semibold">$24,000</span> direct factory stoppage fee
+            </div>
+          </div>
+
+          <div class="metric-card" style="--card-accent: #f59e0b;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Active Quarantines</div>
+            <div id="kpi-quarantines" class="text-2xl sm:text-3xl font-black text-amber-600 mt-1">3</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-amber-600 font-semibold">2,000 units</span> in quarantine hold bays
+            </div>
+          </div>
+
+          <div class="metric-card" style="--card-accent: #f43f5e;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total RMA Claimed</div>
+            <div id="kpi-claimed" class="text-2xl sm:text-3xl font-black text-rose-600 mt-1">$264,000</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-slate-600">3 formal claims</span> filed with vendors
+            </div>
+          </div>
+
+          <div class="metric-card" style="--card-accent: #059669;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total RMA Settled</div>
+            <div id="kpi-settled" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-1">$88,000</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-emerald-600 font-semibold">Approved</span> full warranty refund
+            </div>
+          </div>
+
+          <div class="metric-card" style="--card-accent: #8b5cf6;">
+            <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Penalties Debited</div>
+            <div id="kpi-penalties" class="text-2xl sm:text-3xl font-black text-violet-600 mt-1">$39,000</div>
+            <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span class="text-violet-600 font-semibold">2 Debit Memos</span> debited from payables
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Multi-Plant Facility Status Matrix -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">Multi-Plant Facility Telemetry & Dock Capacity</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Real-time status across Precision Auto Parts 4 global assembly sites</p>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">4 Facilities Active</span>
+        </div>
+        <div class="data-table-container border-0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plant Code</th>
+                <th>Facility Name</th>
+                <th>Location</th>
+                <th>Receiving Docks</th>
+                <th>Line Downtime</th>
+                <th>Defective Batches</th>
+                <th>QC Compliance Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-mono font-bold text-blue-600">PLT-DET</td>
+                <td class="font-semibold text-slate-900">Detroit Assembly Plant #1</td>
+                <td>Detroit, USA 🇺🇸</td>
+                <td class="font-mono">12 Bays</td>
+                <td class="font-mono font-bold text-rose-600">150 min ($15,000)</td>
+                <td><span class="badge-pill badge-breach">LOT-2026-BORG-7890</span></td>
+                <td><span class="badge-pill badge-warning">High Defect Risk</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono font-bold text-blue-600">PLT-STU</td>
+                <td class="font-semibold text-slate-900">Stuttgart Powertrain Works</td>
+                <td>Stuttgart, Germany 🇩🇪</td>
+                <td class="font-mono">8 Bays</td>
+                <td class="font-mono font-bold text-rose-600">90 min ($9,000)</td>
+                <td><span class="badge-pill badge-breach">LOT-2026-BORG-7714</span></td>
+                <td><span class="badge-pill badge-warning">Probationary Hold</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono font-bold text-blue-600">PLT-CHE</td>
+                <td class="font-semibold text-slate-900">Chennai Engine & Transmission Center</td>
+                <td>Chennai, India 🇮🇳</td>
+                <td class="font-mono">15 Bays</td>
+                <td class="font-mono text-emerald-600 font-bold">0 min ($0)</td>
+                <td><span class="badge-pill badge-compliant">0 Defect Lots</span></td>
+                <td><span class="badge-pill badge-compliant">100% Compliant</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono font-bold text-blue-600">PLT-SHA</td>
+                <td class="font-semibold text-slate-900">Shanghai High-Tech Assembly Plant</td>
+                <td>Shanghai, China 🇨🇳</td>
+                <td class="font-mono">10 Bays</td>
+                <td class="font-mono text-emerald-600 font-bold">0 min ($0)</td>
+                <td><span class="badge-pill badge-compliant">0 Defect Lots</span></td>
+                <td><span class="badge-pill badge-compliant">100% Compliant</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Scope Boundaries (In-Scope vs Out-of-Scope) -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl p-5 border border-emerald-200 shadow-sm">
+          <div class="flex items-center gap-2 font-bold text-emerald-900 text-sm mb-3">
+            <span class="text-base">✅</span> IN-SCOPE SYSTEM CAPABILITIES (VQCMS Core)
+          </div>
+          <ul class="text-xs text-slate-600 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✓</span>
+              <span><strong>Supplier & Contract Governance:</strong> SLA PPM thresholds, hourly line stoppage penalty rates, and warranty coverage terms.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✓</span>
+              <span><strong>Automotive Parts Master:</strong> Criticality Tier classification (Tier A Safety, Tier B Functional, Tier C Standard).</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✓</span>
+              <span><strong>Dock Receiving & Batch QC:</strong> Sample size inspection, defect categorization, and engine-level PPM calculation.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✓</span>
+              <span><strong>Containment & Warranty Recovery:</strong> Physical bay quarantine, formal RMA filing, and automated debit memo generation.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✓</span>
+              <span><strong>Audit Compliance:</strong> Immutable append-only ledger tracking all status transitions for IATF 16949 / ISO 9001.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-2 font-bold text-slate-800 text-sm mb-3">
+            <span class="text-base">🚫</span> EXCLUDED OUT-OF-SCOPE DOMAINS
+          </div>
+          <ul class="text-xs text-slate-600 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-rose-500 font-bold">✗</span>
+              <span><strong>Financial Banking Gateways:</strong> Wire transfer execution and currency hedging (handled by external corporate ERP/SAP).</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-rose-500 font-bold">✗</span>
+              <span><strong>CNC Machine Tool Integration:</strong> SCADA/PLC direct hardware communication (handled by plant-floor MES).</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-rose-500 font-bold">✗</span>
+              <span><strong>End-Customer Warranty Portal:</strong> Dealership warranty claims submitted by vehicle retail buyers.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-rose-500 font-bold">✗</span>
+              <span><strong>Logistics Fleet Routing:</strong> GPS tracking of freight carrier vessels and customs clearing logistics.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         TAB 2: DATA MODEL & SCHEMA DICTIONARY
+         ======================================================================= -->
+    <section id="tab-schema" class="hidden space-y-6">
+      
+      <!-- Normalization Overview Cards -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+        <h3 class="text-lg font-bold text-slate-900 mb-1">Relational Normalization Journey (1NF $\to$ 3NF/BCNF)</h3>
+        <p class="text-xs text-slate-500 mb-4">Eliminating insertion, update, and deletion anomalies across the automotive supply chain</p>
+        
+        <div class="grid md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-200/80">
+            <div class="font-bold text-blue-900 text-sm flex items-center justify-between mb-1">
+              <span>1NF: Atomic Attributes</span>
+              <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-blue-200 text-blue-800 font-semibold">100% Atomic</span>
+            </div>
+            <p class="text-blue-950 leading-relaxed">
+              Eliminated multi-valued comma lists (e.g., storing multiple defect types in one inspection row). Decomposed composite delivery addresses into atomic columns (<code class="font-mono bg-blue-100 px-1 rounded">city</code>, <code class="font-mono bg-blue-100 px-1 rounded">country</code>). Every table has a distinct single-column surrogate Primary Key.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80">
+            <div class="font-bold text-emerald-900 text-sm flex items-center justify-between mb-1">
+              <span>2NF: No Partial Dependencies</span>
+              <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-200 text-emerald-800 font-semibold">Full Dep</span>
+            </div>
+            <p class="text-emerald-950 leading-relaxed">
+              Decomposed purchase orders into <code class="font-mono bg-emerald-100 px-1 rounded">purchase_orders</code> and <code class="font-mono bg-emerald-100 px-1 rounded">po_line_items</code>. In composite keys, non-key attributes (<code class="font-mono bg-emerald-100 px-1 rounded">unit_price</code>, <code class="font-mono bg-emerald-100 px-1 rounded">ordered_quantity</code>) depend strictly on the complete line-item key, not just the order header.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-violet-50/60 border border-violet-200/80">
+            <div class="font-bold text-violet-900 text-sm flex items-center justify-between mb-1">
+              <span>3NF / BCNF: No Transitives</span>
+              <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-violet-200 text-violet-800 font-semibold">Candidate Keys</span>
+            </div>
+            <p class="text-violet-950 leading-relaxed">
+              Eliminated transitive relationships where non-key attributes determined other non-keys. Extracted contract terms (<code class="font-mono bg-violet-100 px-1 rounded">max_allowable_ppm</code>, <code class="font-mono bg-violet-100 px-1 rounded">hourly_downtime_penalty</code>) into <code class="font-mono bg-violet-100 px-1 rounded">supplier_contracts</code>. Every determinant is a candidate key.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Filtering & Search Toolbar -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <!-- Category Filter Pills -->
+        <div class="flex items-center gap-1.5 flex-wrap text-xs">
+          <span class="font-semibold text-slate-500 mr-1">Category:</span>
+          <button class="cat-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-slate-900 text-white shadow transition-all" onclick="filterTablesByCategory('ALL', this)">All (14)</button>
+          <button class="cat-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all" onclick="filterTablesByCategory('MASTER', this)">Master (4)</button>
+          <button class="cat-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all" onclick="filterTablesByCategory('PROCUREMENT', this)">Procurement (3)</button>
+          <button class="cat-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all" onclick="filterTablesByCategory('QUALITY', this)">Quality & QC (3)</button>
+          <button class="cat-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all" onclick="filterTablesByCategory('FINANCIAL', this)">Financial (3)</button>
+          <button class="cat-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all" onclick="filterTablesByCategory('AUDIT', this)">Audit (1)</button>
+        </div>
+
+        <!-- Live Search Input -->
+        <div class="w-full sm:w-72">
+          <input type="text" placeholder="Search tables or columns..." oninput="handleTableSearch(this.value)" class="w-full text-xs px-3.5 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+        </div>
+      </div>
+
+      <!-- Dynamic Schema Table Cards Container -->
+      <div id="schema-tables" class="space-y-3">
+        <div class="p-8 text-center text-slate-400 text-sm">
+          <span class="animate-spin inline-block mr-2">⚙️</span> Loading schema dictionary from SQLite engine…
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         TAB 3: LIVE SQL QUERY WORKBENCH (Interactive Live Runner)
+         ======================================================================= -->
+    <section id="tab-workbench" class="hidden space-y-4">
+      
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        
+        <!-- Sidebar: Pre-defined 11 Assignment Queries -->
+        <div class="w-full lg:w-80 flex-shrink-0 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col max-h-[720px]">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm">Analytical Query Suite</h3>
+              <p class="text-[11px] text-slate-500">11 Business Queries</p>
+            </div>
+            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">1-Click Run</span>
+          </div>
+          <div id="query-sidebar" class="space-y-1.5 overflow-y-auto pr-1 flex-1">
+            <div class="p-4 text-center text-xs text-slate-400">Loading queries…</div>
+          </div>
+        </div>
+
+        <!-- Main Code Editor & Live Table Output Pane -->
+        <div class="flex-1 w-full space-y-4">
+          
+          <!-- Query Header Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <h3 id="query-title-display" class="font-extrabold text-slate-900 text-lg flex items-center">
+                Custom SQL Runner
+              </h3>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 border border-slate-200">SQLite 3.50.6 WASM</span>
+              </div>
+            </div>
+            <div id="query-intent" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200 leading-relaxed">
+              Select any query from the left sidebar or type custom SQL below. Runs directly against in-memory SQLite database!
+            </div>
+          </div>
+
+          <!-- SQL Console (Dark IDE Style) -->
+          <div class="sql-console">
+            <div class="bg-slate-900/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <div class="flex items-center gap-2 font-mono">
+                <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                <span class="ml-2 text-slate-300 font-bold">SQL Query Console</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="copyQuerySQL()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">
+                  📋 Copy
+                </button>
+                <button onclick="resetQuerySQL()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">
+                  ↺ Reset
+                </button>
+              </div>
+            </div>
+            <textarea id="sql-input" class="sql-editor-textarea" spellcheck="false" placeholder="-- Type any SQL query here and press Ctrl+Enter to execute&#10;SELECT * FROM suppliers;"></textarea>
+          </div>
+
+          <!-- Execution Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-2">
+              <button onclick="runQuery()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition-all hover:-translate-y-0.5 active:translate-y-0">
+                <span>▶</span> <span>Execute SQL</span> <span class="hidden sm:inline font-mono font-normal text-xs text-emerald-200">(Ctrl+Enter)</span>
+              </button>
+              <button onclick="exportQueryCSV()" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors">
+                <span>📥</span> <span>Export CSV</span>
+              </button>
+            </div>
+            <div id="query-meta">
+              <span class="text-xs text-slate-400">Ready to execute</span>
+            </div>
+          </div>
+
+          <!-- Query Output Table Container -->
+          <div id="query-output" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-12 text-center text-slate-400 text-sm">
+              <div class="text-3xl mb-2">⚡</div>
+              Select a query from the sidebar or type SQL to inspect live relational data.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         TAB 4: QUALITY TELEMETRY & PENALTY ANALYTICS
+         ======================================================================= -->
+    <section id="tab-telemetry" class="hidden space-y-6">
+      
+      <!-- Financial Recovery Counter Strip -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <div class="metric-card" style="--card-accent: #f43f5e;">
+          <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Warranty Claims Filed</div>
+          <div id="tel-claimed" class="text-3xl font-black text-rose-600 mt-1">$264,000</div>
+          <p class="text-xs text-slate-500 mt-1">3 RMA claims submitted across defective batches</p>
+        </div>
+
+        <div class="metric-card" style="--card-accent: #10b981;">
+          <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Settled & Approved Refunds</div>
+          <div id="tel-settled" class="text-3xl font-black text-emerald-600 mt-1">$88,000</div>
+          <p class="text-xs text-slate-500 mt-1">Direct reimbursement from supplier under warranty SLA</p>
+        </div>
+
+        <div class="metric-card" style="--card-accent: #8b5cf6;">
+          <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Line Stoppage Penalties</div>
+          <div id="tel-penalties" class="text-3xl font-black text-violet-600 mt-1">$39,000</div>
+          <p class="text-xs text-slate-500 mt-1">Debit memos debited against supplier payables</p>
+        </div>
+
+      </div>
+
+      <!-- Telemetry Charts Row -->
+      <div class="grid md:grid-cols-2 gap-6">
+        
+        <!-- PPM Bar Chart -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Supplier Defect PPM vs Contract SLA Limit</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Red bars indicate SLA breach incurring penalty fees</p>
+            </div>
+            <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Breach Alert</span>
+          </div>
+          <div class="relative flex-1 min-h-[300px]">
+            <canvas id="chart-ppm"></canvas>
+          </div>
+        </div>
+
+        <!-- Downtime Financial Loss Doughnut Chart -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Assembly Line Downtime Financial Losses by Plant</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Quantifying the 14% factory downtime financial impact</p>
+            </div>
+            <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">Plant Losses</span>
+          </div>
+          <div class="relative flex-1 min-h-[300px]">
+            <canvas id="chart-downtime"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Critical Component Quality Tiering Card -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+        <h3 class="font-bold text-slate-900 text-base mb-1">Safety-Critical Component Tiering (IATF 16949 Analysis)</h3>
+        <p class="text-xs text-slate-500 mb-4">Components categorized by risk tier and supplier PPM performance</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl border border-rose-200 bg-rose-50/40">
+            <div class="flex items-center justify-between font-bold text-rose-900 mb-2">
+              <span class="text-sm">Tier A: Safety Critical</span>
+              <span class="badge-pill badge-breach">Active Risk</span>
+            </div>
+            <p class="text-slate-600 mb-2">Crankshafts, VVT Solenoids, High-Pressure Injectors, MLS Gaskets, Turbo Actuators.</p>
+            <div class="pt-2 border-t border-rose-200 text-rose-950 font-semibold">
+              ⚠️ BorgWarner Turbo Actuator breach: <strong>70,000 PPM</strong>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-amber-200 bg-amber-50/40">
+            <div class="flex items-center justify-between font-bold text-amber-900 mb-2">
+              <span class="text-sm">Tier B: High Functional</span>
+              <span class="badge-pill badge-warning">Under Review</span>
+            </div>
+            <p class="text-slate-600 mb-2">DCT Input Shafts, Differential Carrier Rings, Dual Mass Dynamic Flywheels, Synchromesh Rings.</p>
+            <div class="pt-2 border-t border-amber-200 text-amber-950 font-semibold">
+              ⚠️ ZF Differential Carrier failure: <strong>30,000 PPM</strong>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/40">
+            <div class="flex items-center justify-between font-bold text-emerald-900 mb-2">
+              <span class="text-sm">Tier C: Standard Hardware</span>
+              <span class="badge-pill badge-compliant">Compliant</span>
+            </div>
+            <p class="text-slate-600 mb-2">Die-Cast Aluminum Engine Oil Sump Pan, Fasteners, Standard Brackets.</p>
+            <div class="pt-2 border-t border-emerald-200 text-emerald-950 font-semibold">
+              ✓ Zero critical defects reported in production
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         TAB 5: LOT CONTAINMENT & AUDIT TRAIL
+         ======================================================================= -->
+    <section id="tab-audit" class="hidden space-y-6">
+      
+      <div class="grid lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Suspect Batch Stepper (LOT-2026-BORG-7890) -->
+        <div class="lg:col-span-5 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-rose-600 font-mono">Traceability Stepper</span>
+              <h3 class="font-bold text-slate-900 text-base">Lot Containment Lifecycle</h3>
+              <p class="text-xs text-slate-500 font-mono">Batch: LOT-2026-BORG-7890</p>
+            </div>
+            <span class="badge-pill badge-breach">Critical Hold</span>
+          </div>
+
+          <div id="audit-timeline" class="flex-1 pr-2">
+            <div class="p-4 text-center text-xs text-slate-400">Loading lot containment stepper…</div>
+          </div>
+        </div>
+
+        <!-- Right Column: Compliance Audit Log Ledger -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Compliance Audit Log (Immutable Ledger)</h3>
+              <p class="text-xs text-slate-500">Every quarantine transition is logged via automated database triggers</p>
+            </div>
+            <div>
+              <input type="text" placeholder="Filter audit trail..." oninput="filterAuditLog(this.value)" class="text-xs px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+
+          <div id="audit-log-table" class="data-table-container max-h-[500px] overflow-y-auto flex-1">
+            <div class="p-8 text-center text-xs text-slate-400">Loading audit log records…</div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between">
+            <span>Enforced by: <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">trg_audit_quarantine_insert</code> &amp; <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">trg_audit_quarantine_update</code></span>
+            <span class="font-semibold text-emerald-600">✓ IATF 16949 / ISO 9001 Compliant</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         TAB 6: VIVA DEFENSE CHEAT-SHEET & Q&A
+         ======================================================================= -->
+    <section id="tab-viva" class="hidden space-y-4">
+      
+      <div class="bg-gradient-to-r from-blue-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-6 shadow-xl border border-slate-700/80 mb-6">
+        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2">
+          <span>🎓</span> Academic Defense & Panel Interview Readiness
+        </div>
+        <h2 class="text-2xl font-black text-white">Professor Viva Defense Cheat-Sheet</h2>
+        <p class="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+          High-probability theoretical and implementation questions evaluated by DBMS professors. Click each card to reveal the recommended senior-level model answer and technical talking points.
+        </p>
+      </div>
+
+      <!-- Viva Q&A Accordion Panel -->
+      <div class="space-y-3" id="viva-panel">
+
+        <!-- Q1: Normalization -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 font-bold text-slate-900 text-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none transition-colors" onclick="toggleViva(this)">
+            <span class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">1</span>
+              <span>Why did you choose 3NF/BCNF normalization over a denormalized star schema?</span>
+            </span>
+            <span class="arrow text-slate-400 text-base font-mono">▸</span>
+          </div>
+          <div class="px-5 pb-5 pt-2 text-xs text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50 hidden">
+            <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-950 font-medium mb-3">
+              <strong>Key Senior Examiner Concept:</strong> OLTP transactional integrity vs OLAP analytical reads. Quality management requires zero data corruption.
+            </div>
+            <p class="mb-2">
+              <strong>Model Answer:</strong> In an automotive quality management system, <strong>data integrity is paramount</strong>. If we used a denormalized schema, updating a supplier's compliance score or hourly penalty rate would require modifying thousands of historical inspection records—risking severe <em>Update Anomalies</em> where different rows report conflicting penalty amounts.
+            </p>
+            <p class="mb-2">
+              By normalizing to <strong>3NF and BCNF</strong>:
+            </p>
+            <ul class="list-disc pl-5 space-y-1 mb-2">
+              <li>Every non-key attribute depends strictly on the primary key (no transitive dependencies like supplier country determining penalty terms).</li>
+              <li>Every determinant is a candidate key (BCNF guarantee).</li>
+              <li>Insertion anomalies are prevented (we can register a new Tier-1 supplier before they ship their first batch).</li>
+              <li>Deletion anomalies are prevented (deleting a canceled purchase order does not erase the component catalog entry).</li>
+            </ul>
+            <p>
+              To maintain fast read performance for executive dashboards, we built pre-joined SQL views (<code class="font-mono bg-slate-200 px-1 rounded">v_supplier_quality_scorecard</code>, <code class="font-mono bg-slate-200 px-1 rounded">v_financial_recovery_summary</code>) with 10 targeted B-Tree indexes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q2: Triggers vs App Code -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 font-bold text-slate-900 text-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none transition-colors" onclick="toggleViva(this)">
+            <span class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">2</span>
+              <span>Why use database triggers for PPM calculation and audit logging instead of application code?</span>
+            </span>
+            <span class="arrow text-slate-400 text-base font-mono">▸</span>
+          </div>
+          <div class="px-5 pb-5 pt-2 text-xs text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50 hidden">
+            <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 font-medium mb-3">
+              <strong>Key Senior Examiner Concept:</strong> Centralized single-source-of-truth vs distributed fragile client logic.
+            </div>
+            <p class="mb-2">
+              <strong>Model Answer:</strong> Automotive manufacturing involves multiple heterogeneous client systems: plant-floor barcode scanners, automated testing rigs, Java microservices, and mobile audit tablets. If PPM calculation or audit logging were handled in application code, a developer writing a new ETL script or a buggy batch-import tool could bypass the business logic, resulting in un-audited or un-scored lots.
+            </p>
+            <p class="mb-2">
+              By implementing <code class="font-mono bg-slate-200 px-1 rounded">trg_auto_calculate_ppm</code> and <code class="font-mono bg-slate-200 px-1 rounded">trg_audit_quarantine_insert</code> at the database engine level:
+            </p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Zero Bypass:</strong> Any insertion into <code class="font-mono bg-slate-200 px-1 rounded">inspection_records</code> immediately computes PPM via engine arithmetic regardless of which programming language or client executed the INSERT.</li>
+              <li><strong>Regulatory Compliance:</strong> IATF 16949 / ISO 9001 auditors require proof of an immutable audit trail that application users cannot manipulate or skip.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q3: ACID Guarantees -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 font-bold text-slate-900 text-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none transition-colors" onclick="toggleViva(this)">
+            <span class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">3</span>
+              <span>How does your system guarantee ACID properties during simultaneous assembly line stoppages?</span>
+            </span>
+            <span class="arrow text-slate-400 text-base font-mono">▸</span>
+          </div>
+          <div class="px-5 pb-5 pt-2 text-xs text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50 hidden">
+            <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg text-purple-950 font-medium mb-3">
+              <strong>Key Senior Examiner Concept:</strong> Transaction isolation, foreign key cascading, and write-ahead logging (WAL).
+            </div>
+            <p class="mb-2">
+              <strong>Model Answer:</strong>
+            </p>
+            <ul class="list-disc pl-5 space-y-1.5">
+              <li><strong>Atomicity:</strong> When an inspection fails and triggers a quarantine hold plus a debit memo, all operations execute within an atomic transaction. If debit memo creation fails, the quarantine record rolls back to prevent inconsistent states.</li>
+              <li><strong>Consistency:</strong> Enforced by domain CHECK constraints (<code class="font-mono bg-slate-200 px-1 rounded">defect_count &lt;= sample_size</code>, <code class="font-mono bg-slate-200 px-1 rounded">hourly_downtime_penalty &gt;= 0.00</code>) and strict <code class="font-mono bg-slate-200 px-1 rounded">FOREIGN KEY ... ON DELETE RESTRICT</code> rules preventing orphaned records.</li>
+              <li><strong>Isolation:</strong> Both SQLite (via WAL journal) and PostgreSQL (via MVCC Multi-Version Concurrency Control) ensure readers never see uncommitted quarantine transitions, preventing dirty reads.</li>
+              <li><strong>Durability:</strong> Transactions are committed to non-volatile disk storage before confirming execution success to the calling client.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q4: Window Functions -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 font-bold text-slate-900 text-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none transition-colors" onclick="toggleViva(this)">
+            <span class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">4</span>
+              <span>Explain how the Window Function in Query 6 (DENSE_RANK) solves a business problem.</span>
+            </span>
+            <span class="arrow text-slate-400 text-base font-mono">▸</span>
+          </div>
+          <div class="px-5 pb-5 pt-2 text-xs text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50 hidden">
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-950 font-medium mb-3">
+              <strong>Key Senior Examiner Concept:</strong> CTE aggregation combined with partitioned window ranking without collapsing rows.
+            </div>
+            <p class="mb-2">
+              <strong>Model Answer:</strong> A standard <code class="font-mono bg-slate-200 px-1 rounded">ORDER BY component_ppm DESC</code> mixes Tier A safety parts (crankshafts) with Tier C fasteners, hiding which critical parts pose high safety risks.
+            </p>
+            <p class="mb-2">
+              In Query 6, we use:
+            </p>
+            <pre class="font-mono bg-slate-900 text-cyan-300 p-2.5 rounded text-[11px] mb-2 overflow-x-auto">DENSE_RANK() OVER (PARTITION BY criticality_tier ORDER BY component_ppm DESC) AS defect_rank_within_tier</pre>
+            <p>
+              This partitions the catalog into Tier A, B, and C pools and assigns seamless ranks (1, 2, 3...) within each tier without gaps. This instantly isolates the highest-risk safety component (BorgWarner Turbo Actuator at Rank 1 in Tier A with 70,000 PPM) without requiring separate complex subqueries for each tier.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q5: Scale & Indexing -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 font-bold text-slate-900 text-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none transition-colors" onclick="toggleViva(this)">
+            <span class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">5</span>
+              <span>How will this architecture scale when processing 10,000,000 inspection records annually?</span>
+            </span>
+            <span class="arrow text-slate-400 text-base font-mono">▸</span>
+          </div>
+          <div class="px-5 pb-5 pt-2 text-xs text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50 hidden">
+            <div class="p-3 bg-cyan-50 border border-cyan-200 rounded-lg text-cyan-950 font-medium mb-3">
+              <strong>Key Senior Examiner Concept:</strong> B-Tree indexing, range partitioning by date, and materialized view caching.
+            </div>
+            <p class="mb-2">
+              <strong>Model Answer:</strong>
+            </p>
+            <ul class="list-disc pl-5 space-y-1.5">
+              <li><strong>Targeted B-Tree Indexes:</strong> We created 10 B-Tree indexes on high-cardinality search columns (<code class="font-mono bg-slate-200 px-1 rounded">idx_receipts_lot</code>, <code class="font-mono bg-slate-200 px-1 rounded">idx_inspections_date</code>, <code class="font-mono bg-slate-200 px-1 rounded">idx_inspections_status</code>) converting full table scans ($O(N)$) into logarithmic lookups ($O(\log N)$).</li>
+              <li><strong>Range Partitioning by Date:</strong> In PostgreSQL, <code class="font-mono bg-slate-200 px-1 rounded">inspection_records</code> is partitioned by <code class="font-mono bg-slate-200 px-1 rounded">inspection_date</code> monthly. Queries filtering for recent batches prune 95% of partitions instantly.</li>
+              <li><strong>Materialized Views:</strong> Heavy analytical joins across 6 tables are cached in scheduled materialized views, refreshed off-peak, ensuring sub-50ms dashboard response times.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       4. FOOTER & COMPLIANCE METADATA
+       ========================================================================= -->
+  <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-6 mt-12 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <span class="font-bold text-slate-200">Vendor Quality &amp; Compliance Management System (VQCMS - XII)</span>
+        <span class="block sm:inline text-slate-500 sm:ml-2">Course: SEM I Data Science &amp; Technology · DBMS Project Group 12</span>
+      </div>
+      <div class="flex items-center gap-4 text-[11px] font-mono text-slate-500">
+        <span>Engine: ANSI SQL / SQLite / PostgreSQL</span>
+        <span>·</span>
+        <span>BCNF Normalized</span>
+        <span>·</span>
+        <span class="text-emerald-400 font-semibold">100% ACID Integrity</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic & Engine Scripts -->
+  <script src="js/queries_data.js"></script>
+  <script src="js/database.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
