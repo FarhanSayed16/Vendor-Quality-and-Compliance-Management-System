@@ -1,0 +1,136 @@
+@startuml VQCMS_Enterprise_Architecture
+' ==============================================================================
+'  VQCMS - XII | Enterprise System Architecture
+'  Multi-Plant Ingestion -> OLTP Core -> BI & ERP
+' ==============================================================================
+
+!define AZURE    #2563EB
+!define EMERALD  #059669
+!define AMBER    #D97706
+!define ROSE     #E11D48
+!define VIOLET   #7C3AED
+!define TEAL     #0D9488
+
+skinparam backgroundColor #FAFBFC
+skinparam roundcorner 12
+skinparam shadowing true
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+
+skinparam rectangle {
+    FontSize 12
+    StereotypeFontSize 10
+}
+
+' --- HEADER ---
+header
+<font size=20 color="#1E293B"><b>Enterprise Architecture - VQCMS</b></font>
+<font size=12 color="#64748B">Multi-Plant Ingestion | Relational OLTP Core | Automated Triggers | BI & ERP Services</font>
+end header
+
+footer <font color="#94A3B8" size=9>VQCMS-XII | Precision Auto Parts | Team 12</font>
+
+' ==============================================================================
+' TIER 1 — MULTI-PLANT EDGE LAYER
+' ==============================================================================
+rectangle "**TIER 1  —  Multi-Plant Edge & Ingestion**" as TIER1 #DBEAFE {
+
+    rectangle "**Detroit Assembly**\n//Plant 1 | USA//" as DET <<Plant>> #EFF6FF {
+        rectangle "<&box>  Receiving Dock" as det_dock #BFDBFE
+        rectangle "<&beaker>  QC Test Rig" as det_qc #BFDBFE
+    }
+
+    rectangle "**Stuttgart Powertrain**\n//Plant 2 | Germany//" as STU <<Plant>> #EFF6FF {
+        rectangle "<&box>  Receiving Dock" as stu_dock #BFDBFE
+        rectangle "<&beaker>  Ultrasonic Bench" as stu_qc #BFDBFE
+    }
+
+    rectangle "**Chennai Engine Works**\n//Plant 3 | India//" as CHE <<Plant>> #EFF6FF {
+        rectangle "<&box>  Receiving Dock" as che_dock #BFDBFE
+        rectangle "<&beaker>  Balance Bench" as che_qc #BFDBFE
+    }
+
+    rectangle "**Shanghai High-Tech**\n//Plant 4 | China//" as SHA <<Plant>> #EFF6FF {
+        rectangle "<&box>  Receiving Dock" as sha_dock #BFDBFE
+        rectangle "<&beaker>  Flow Bench" as sha_qc #BFDBFE
+    }
+}
+
+' ==============================================================================
+' TIER 2 — SECURITY GATEWAY
+' ==============================================================================
+rectangle "**TIER 2  —  Enterprise Security Gateway**" as TIER2 #F5F3FF {
+
+    rectangle "<&shield>  **TLS 1.3 / OAuth 2.0 API Gateway**\nAuthentication & Rate Limiting" as GW #EDE9FE
+
+    rectangle "<&lock-locked>  **Role-Based Access Control**\n| qc_inspector | procurement | plant_ops | auditor | admin |" as RBAC #EDE9FE
+}
+
+' ==============================================================================
+' TIER 3 — CORE RELATIONAL DATABASE ENGINE
+' ==============================================================================
+rectangle "**TIER 3  —  ACID-Compliant Relational Database Engine**" as TIER3 #D1FAE5 {
+
+    database "  **VQCMS Primary Database**\n  PostgreSQL / SQLite 3  " as DB #ECFDF5 {
+    }
+
+    rectangle "**Relational Tables** (14 | 3NF/BCNF)" as TBLS #A7F3D0 {
+        rectangle "suppliers\ncontracts\ncomponents" as t_master #D1FAE5
+        rectangle "purchase_orders\npo_line_items\nshipment_receipts" as t_proc #D1FAE5
+        rectangle "qc_inspectors\ninspection_records\nbatch_quarantines" as t_qa #D1FAE5
+        rectangle "downtime_incidents\nrma_claims\npenalty_invoices" as t_fin #D1FAE5
+    }
+
+    rectangle "<&calculator>  **Engine Triggers**" as TRIGS #FEF3C7 {
+        rectangle "trg_auto_calculate_ppm\n//Auto PPM on INSERT//" as trg1 #FDE68A
+        rectangle "trg_audit_quarantine\n//Immutable State Logger//" as trg2 #FDE68A
+    }
+
+    rectangle "<&eye>  **Operational Views**" as VIEWS #E0F2FE {
+        rectangle "v_supplier_quality_scorecard" as v1 #BAE6FD
+        rectangle "v_active_quarantine_dashboard" as v2 #BAE6FD
+        rectangle "v_financial_recovery_summary" as v3 #BAE6FD
+    }
+
+    rectangle "<&spreadsheet>  **Performance Indexes**\nB-Tree on lot_number, date, status, supplier" as IDX #F1F5F9
+    rectangle "<&book>  **Compliance Audit Ledger**\ncompliance_audit_log (IATF 16949 / ISO 9001)" as AUDIT #FFE4E6
+}
+
+' ==============================================================================
+' TIER 4 — DOWNSTREAM SERVICES
+' ==============================================================================
+rectangle "**TIER 4  —  Downstream Enterprise Services & BI**" as TIER4 #FEF3C7 {
+
+    rectangle "<&bar-chart>  **Executive BI Dashboard**\nPowerBI / Tableau\nSupplier PPM Heatmaps" as BI #FDE68A
+
+    rectangle "<&briefcase>  **ERP Financial Connector**\nSAP / Oracle AP\nDebit Memo Integration" as ERP #FDE68A
+
+    rectangle "<&envelope-closed>  **Supplier Notification Portal**\nAutomated SLA Breach Alerts\n& RMA Dispatch" as NOTIF #FDE68A
+}
+
+' ==============================================================================
+' CONNECTIONS
+' ==============================================================================
+det_dock -[#3B82F6,bold]-> GW : "  HTTPS  "
+det_qc -[#3B82F6]-> GW
+stu_dock -[#3B82F6,bold]-> GW : "  HTTPS  "
+stu_qc -[#3B82F6]-> GW
+che_dock -[#3B82F6,bold]-> GW : "  HTTPS  "
+che_qc -[#3B82F6]-> GW
+sha_dock -[#3B82F6,bold]-> GW : "  HTTPS  "
+sha_qc -[#3B82F6]-> GW
+
+GW -[#7C3AED,bold]-> RBAC : "  Authorize  "
+RBAC -[#059669,bold]-> DB : "  SQL DML/DDL  "
+
+DB -[#059669]-> TBLS
+TBLS -[#D97706]-> TRIGS : "  On INSERT  "
+TRIGS -[#DC2626,dashed]-> AUDIT : "  Audit Entry  "
+TBLS --> VIEWS
+TBLS --> IDX
+
+VIEWS -[#2563EB,bold]-> BI : "  Read-Only  "
+TBLS -[#D97706,bold]-> ERP : "  Debit Memos  "
+TBLS -[#E11D48]-> NOTIF : "  SLA Alerts  "
+
+@enduml

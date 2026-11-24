@@ -1,0 +1,307 @@
+@startuml VQCMS_Entity_Relationship_Diagram
+' ==============================================================================
+'  VQCMS - XII | Relational Entity-Relationship Diagram
+'  Precision Auto Parts | Team 12
+' ==============================================================================
+
+' --- GLOBAL THEME ---
+!define AZURE    #2563EB
+!define EMERALD  #059669
+!define AMBER    #D97706
+!define ROSE     #E11D48
+!define VIOLET   #7C3AED
+!define SLATE    #334155
+!define TEAL     #0D9488
+
+skinparam backgroundColor #FAFBFC
+skinparam roundcorner 12
+skinparam linetype ortho
+skinparam shadowing true
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+skinparam wrapWidth 220
+
+skinparam package {
+    FontStyle bold
+    FontSize 13
+    BorderThickness 2
+    StereotypeFontSize 10
+}
+
+skinparam entity {
+    FontSize 11
+    AttributeFontSize 10
+}
+
+' --- HEADER & FOOTER ---
+header
+<font size=20 color="#1E293B"><b>Vendor Quality & Compliance Management System</b></font>
+<font size=12 color="#64748B">Crow's Foot Relational Data Model | 14 Tables | 3NF/BCNF Normalized | Precision Auto Parts</font>
+end header
+
+footer <font color="#94A3B8" size=9>VQCMS-XII | SEM I DBMS Project | Team 12 | <i>Primary Keys</i> in <color:#B45309><b>amber</b></color> | <i>Foreign Keys</i> in <color:#2563EB><b>blue</b></color></font>
+
+' ==============================================================================
+' MODULE 1: MASTER REGISTRIES (Deep Blue Tones)
+' ==============================================================================
+package "  MASTER REGISTRIES & CONFIGURATION  " as PKG_MASTER <<Rectangle>> #DBEAFE {
+
+    entity "PLANTS" as plants << (P, #3B82F6) >> #EFF6FF {
+        * <color:#B45309><b>plant_id : INT</b></color> <<PK>>
+        --
+        <color:#2563EB><i>Unique Constraints</i></color>
+        ..
+        * plant_code : VARCHAR(10) <<UK>>
+        * plant_name : VARCHAR(100)
+        * city : VARCHAR(50)
+        * country : VARCHAR(50)
+        * dock_capacity : INT
+        * is_active : BOOLEAN
+    }
+
+    entity "SUPPLIERS" as suppliers << (S, #059669) >> #ECFDF5 {
+        * <color:#B45309><b>supplier_id : INT</b></color> <<PK>>
+        --
+        <color:#059669><i>Vendor Profile</i></color>
+        ..
+        * supplier_code : VARCHAR(20) <<UK>>
+        * company_name : VARCHAR(150)
+        * country : VARCHAR(50)
+        * contact_email : VARCHAR(100) <<UK>>
+        * phone : VARCHAR(30)
+        * iso_certified : BOOLEAN
+        * compliance_rating : DECIMAL(3,2)
+        * status : ENUM
+    }
+
+    entity "SUPPLIER_CONTRACTS" as contracts << (C, #7C3AED) >> #F5F3FF {
+        * <color:#B45309><b>contract_id : INT</b></color> <<PK>>
+        --
+        <color:#7C3AED><i>SLA & Penalty Terms</i></color>
+        ..
+        * <color:#2563EB>supplier_id : INT</color> <<FK>>
+        * contract_code : VARCHAR(30) <<UK>>
+        * start_date : DATE
+        * end_date : DATE
+        * max_allowable_ppm : INT
+        * hourly_downtime_penalty : DEC(10,2)
+        * warranty_coverage_pct : DEC(5,2)
+        terms_summary : TEXT
+    }
+
+    entity "COMPONENTS" as components << (M, #0D9488) >> #F0FDFA {
+        * <color:#B45309><b>component_id : INT</b></color> <<PK>>
+        --
+        <color:#0D9488><i>Engine & Transmission Catalog</i></color>
+        ..
+        * part_number : VARCHAR(50) <<UK>>
+        * component_name : VARCHAR(120)
+        * category : ENUM
+        * subsystem : VARCHAR(50)
+        * criticality_tier : CHAR(1)
+        * standard_cost : DEC(10,2)
+        * material_spec : VARCHAR(100)
+    }
+}
+
+' ==============================================================================
+' MODULE 2: PROCUREMENT & RECEIVING (Amber / Orange Tones)
+' ==============================================================================
+package "  PROCUREMENT & DOCK RECEIVING  " as PKG_PROC <<Rectangle>> #FEF3C7 {
+
+    entity "PURCHASE_ORDERS" as pos << (O, #D97706) >> #FFFBEB {
+        * <color:#B45309><b>po_id : INT</b></color> <<PK>>
+        --
+        <color:#D97706><i>Order Header</i></color>
+        ..
+        * po_number : VARCHAR(30) <<UK>>
+        * <color:#2563EB>supplier_id : INT</color> <<FK>>
+        * <color:#2563EB>plant_id : INT</color> <<FK>>
+        * order_date : DATE
+        * expected_delivery_date : DATE
+        * status : ENUM
+        * total_amount : DEC(12,2)
+    }
+
+    entity "PO_LINE_ITEMS" as lines << (L, #EA580C) >> #FFF7ED {
+        * <color:#B45309><b>po_line_id : INT</b></color> <<PK>>
+        --
+        <color:#EA580C><i>Line Detail</i></color>
+        ..
+        * <color:#2563EB>po_id : INT</color> <<FK>>
+        * <color:#2563EB>component_id : INT</color> <<FK>>
+        * ordered_quantity : INT
+        * unit_price : DEC(10,2)
+        * line_total : DEC(12,2)
+    }
+
+    entity "SHIPMENT_RECEIPTS" as receipts << (R, #9333EA) >> #FAF5FF {
+        * <color:#B45309><b>receipt_id : INT</b></color> <<PK>>
+        --
+        <color:#9333EA><i>Dock Delivery Record</i></color>
+        ..
+        * <color:#2563EB>po_line_id : INT</color> <<FK>>
+        * <color:#2563EB>plant_id : INT</color> <<FK>>
+        * batch_lot_number : VARCHAR(50)
+        * quantity_received : INT
+        * delivery_date : DATE
+        * carrier_tracking : VARCHAR(60)
+        * bill_of_lading : VARCHAR(60)
+        dock_bay : VARCHAR(20)
+    }
+}
+
+' ==============================================================================
+' MODULE 3: QUALITY ASSURANCE (Emerald / Green Tones)
+' ==============================================================================
+package "  QUALITY ASSURANCE & QUARANTINE  " as PKG_QA <<Rectangle>> #D1FAE5 {
+
+    entity "QC_INSPECTORS" as inspectors << (E, #059669) >> #ECFDF5 {
+        * <color:#B45309><b>inspector_id : INT</b></color> <<PK>>
+        --
+        <color:#059669><i>Certified Auditor</i></color>
+        ..
+        * employee_code : VARCHAR(20) <<UK>>
+        * first_name : VARCHAR(50)
+        * last_name : VARCHAR(50)
+        * cert_level : ENUM
+        * <color:#2563EB>plant_id : INT</color> <<FK>>
+        * email : VARCHAR(100) <<UK>>
+    }
+
+    entity "INSPECTION_RECORDS" as inspections << (I, #E11D48) >> #FFF1F2 {
+        * <color:#B45309><b>inspection_id : INT</b></color> <<PK>>
+        --
+        <color:#E11D48><i>Batch QC Verdict</i></color>
+        ..
+        * <color:#2563EB>receipt_id : INT</color> <<FK>>
+        * <color:#2563EB>inspector_id : INT</color> <<FK>>
+        * inspection_date : DATE
+        * sample_size : INT
+        * defect_count : INT
+        * defect_category : ENUM
+        * calculated_ppm : DEC(10,2)
+        * inspection_status : ENUM
+        * coa_verified : BOOLEAN
+        qc_notes : TEXT
+    }
+
+    entity "BATCH_QUARANTINES" as quarantines << (Q, #DC2626) >> #FEF2F2 {
+        * <color:#B45309><b>quarantine_id : INT</b></color> <<PK>>
+        --
+        <color:#DC2626><i>Containment Hold</i></color>
+        ..
+        * <color:#2563EB>inspection_id : INT</color> <<FK, UK>>
+        * quarantine_timestamp : TIMESTAMP
+        * quarantined_quantity : INT
+        * storage_bay : VARCHAR(30)
+        * quarantine_reason : VARCHAR(100)
+        * status : ENUM
+        authorized_by : VARCHAR(50)
+    }
+}
+
+' ==============================================================================
+' MODULE 4: CLAIMS & FINANCIAL PENALTIES (Red / Rose Tones)
+' ==============================================================================
+package "  FINANCIAL ENFORCEMENT & RECOVERY  " as PKG_FIN <<Rectangle>> #FFE4E6 {
+
+    entity "DOWNTIME_INCIDENTS" as downtime << (D, #991B1B) >> #FEF2F2 {
+        * <color:#B45309><b>incident_id : INT</b></color> <<PK>>
+        --
+        <color:#991B1B><i>Assembly Line Halt</i></color>
+        ..
+        * <color:#2563EB>plant_id : INT</color> <<FK>>
+        * <color:#2563EB>receipt_id : INT</color> <<FK>>
+        * assembly_line : VARCHAR(50)
+        * downtime_start : TIMESTAMP
+        * downtime_end : TIMESTAMP
+        * downtime_minutes : INT
+        * line_stoppage_cost : DEC(12,2)
+        * root_cause_summary : TEXT
+    }
+
+    entity "RMA_CLAIMS" as rma << (W, #BE123C) >> #FFF1F2 {
+        * <color:#B45309><b>rma_id : INT</b></color> <<PK>>
+        --
+        <color:#BE123C><i>Warranty Return Claim</i></color>
+        ..
+        * <color:#2563EB>quarantine_id : INT</color> <<FK>>
+        * <color:#2563EB>supplier_id : INT</color> <<FK>>
+        * rma_number : VARCHAR(30) <<UK>>
+        * claim_date : DATE
+        * claim_type : ENUM
+        * claimed_amount : DEC(12,2)
+        settled_amount : DEC(12,2)
+        * settlement_status : ENUM
+        resolution_date : DATE
+    }
+
+    entity "PENALTY_INVOICES" as penalties << (F, #166534) >> #F0FDF4 {
+        * <color:#B45309><b>invoice_id : INT</b></color> <<PK>>
+        --
+        <color:#166534><i>Automated Debit Memo</i></color>
+        ..
+        * <color:#2563EB>supplier_id : INT</color> <<FK>>
+        <color:#2563EB>incident_id : INT</color> <<FK, NULL>>
+        <color:#2563EB>rma_id : INT</color> <<FK, NULL>>
+        * invoice_number : VARCHAR(30) <<UK>>
+        * invoice_date : DATE
+        * base_penalty : DEC(10,2)
+        * downtime_penalty : DEC(12,2)
+        * total_penalty_amount : DEC(12,2)
+        * payment_status : ENUM
+    }
+}
+
+' ==============================================================================
+' MODULE 5: AUDIT LOG (Neutral Slate)
+' ==============================================================================
+package "  AUDIT & REGULATORY GOVERNANCE  " as PKG_AUDIT <<Rectangle>> #E2E8F0 {
+
+    entity "COMPLIANCE_AUDIT_LOG" as audit << (A, #475569) >> #F1F5F9 {
+        * <color:#B45309><b>audit_id : INT</b></color> <<PK>>
+        --
+        <color:#475569><i>Immutable Ledger</i></color>
+        ..
+        * table_name : VARCHAR(50)
+        * record_id : INT
+        * action_type : VARCHAR(20)
+        previous_state : TEXT
+        new_state : TEXT
+        * changed_by : VARCHAR(50)
+        * changed_at : TIMESTAMP
+    }
+}
+
+' ==============================================================================
+' RELATIONSHIPS (Crow's Foot)
+' ==============================================================================
+suppliers ||--o{ contracts : "  governed by  "
+suppliers ||--o{ pos      : "  receives  "
+suppliers ||--o{ rma      : "  refund liable  "
+suppliers ||--o{ penalties : "  debited  "
+
+plants ||--o{ pos        : "  issues  "
+plants ||--o{ receipts   : "  docks at  "
+plants ||--o{ inspectors : "  employs  "
+plants ||--o{ downtime   : "  incurs  "
+
+components ||--o{ lines : "  specified in  "
+
+pos   ||--|{ lines    : "  contains  "
+lines ||--o{ receipts : "  fulfilled via  "
+
+inspectors  ||--o{ inspections : "  conducts  "
+receipts    ||--o{ inspections : "  evaluated by  "
+receipts    ||--o{ downtime    : "  triggers  "
+
+inspections ||--o| quarantines : "  fails into  "
+quarantines ||--o| rma         : "  escalated to  "
+
+downtime ||--o| penalties : "  fee added  "
+rma      ||--o| penalties : "  reconciled  "
+
+quarantines .[#94A3B8].> audit : "  audit trigger  "
+
+@enduml
