@@ -1,8 +1,11 @@
 # Vendor Quality & Compliance Management System (VQCMS - XII)
-### Enterprise Relational Database Project & Documentation Suite
+### Enterprise Relational Database Project & Academic Defense Suite
+**Institution:** K J Somaiya Institute of Management, Somaiya Vidyavihar University, India  
+**Program & Batch:** Batch MCA 2026–2028 | **Course:** Database Management Systems (DBMS) | **Group:** Team 12
 
-[![DBMS Project](https://img.shields.io/badge/DBMS-SEM%20I%20Project-0284c7.svg)](#)
-[![Team](https://img.shields.io/badge/Group-Team%2012-emerald.svg)](#)
+[![Institution](https://img.shields.io/badge/Somaiya-K_J_Somaiya_Institute_of_Management-A72B2A.svg)](#)
+[![Program](https://img.shields.io/badge/MCA-Batch_2026--2028-D9381E.svg)](#)
+[![DBMS Project](https://img.shields.io/badge/DBMS-Project_Group_12-0284c7.svg)](#)
 [![SQL Engine](https://img.shields.io/badge/Engine-PostgreSQL%20%7C%20SQLite%203-blue.svg)](#)
 [![Status](https://img.shields.io/badge/Status-Complete%20%26%20Verified-brightgreen.svg)](#)
 
@@ -26,6 +29,8 @@ All documentation, data models, and database scripts are organized in GitHub Fla
 
 ```
 DBMS_Team_12/
+├── DBMS Group 12 - 1st PPT.pptx           <-- Official Somaiya Template Presentation Deck (14 Slides)
+├── build_pptx.py                          <-- Python Script Generating the Master Presentation
 ├── diagrams/                              <-- Standalone Professional PlantUML (.puml) Suite
 │   ├── 01_entity_relationship.puml        <-- Crow's Foot Relational ERD with PK/FK & Stereotypes
 │   ├── 02_system_architecture.puml        <-- Multi-Plant Ingestion, OLTP Engine, ERP & BI Gateway
@@ -38,6 +43,7 @@ DBMS_Team_12/
 │   ├── 04_web_presentation_plan.md       <-- Interactive web presentation architecture & framework evaluation
 │   ├── 05_deployment_and_web_implementation_plan.md <-- Vercel/GitHub Pages deployment & phase-wise build plan
 │   ├── 06_master_execution_plan.md        <-- 12-Phase master checklist with 80 sub-tasks
+│   ├── 07_presentation_slides_master.md   <-- 14-Slide complete PPT master blueprint (2 slides per member)
 │   └── Problem statement .jpeg            <-- Original assignment problem statement sheet
 ├── web/                                   <-- Interactive Web Presentation Dashboard
 │   ├── index.html                         <-- Single-Page App (Tailwind + Chart.js + sql.js WASM)
@@ -67,6 +73,9 @@ DBMS_Team_12/
 - [Interactive Web Presentation Plan](file:///d:/DBMS_Team_12/docs/04_web_presentation_plan.md)
 - [Deployment & Phase-Wise Implementation Plan](file:///d:/DBMS_Team_12/docs/05_deployment_and_web_implementation_plan.md)
 - [Master Execution Plan (12 Phases)](file:///d:/DBMS_Team_12/docs/06_master_execution_plan.md)
+- [**14-Slide Master PPT Blueprint (2 Slides/Member)**](file:///d:/DBMS_Team_12/docs/07_presentation_slides_master.md)
+- [**Complete Generated Presentation Deck (.pptx)**](file:///d:/DBMS_Team_12/DBMS%20Group%2012%20-%201st%20PPT.pptx)
+- [Presentation Generator Script](file:///d:/DBMS_Team_12/build_pptx.py)
 - [**Interactive Web Dashboard**](file:///d:/DBMS_Team_12/web/index.html)
 - [Database DDL Schema](file:///d:/DBMS_Team_12/sql/schema.sql)
 - [Database Seed Data](file:///d:/DBMS_Team_12/sql/seed_data.sql)
