@@ -1,9 +1,12 @@
 # Presentation Blueprint & Viva Defense Guide
 ## Vendor Quality & Compliance Management System (VQCMS - XII)
 
-**Course:** SEM I – Data Science and Technology / Database Management Systems  
+**Institution:** K J Somaiya Institute of Management, Somaiya Vidyavihar University, India  
+**Program & Batch:** Batch MCA 2026–2028  
+**Course:** Database Management Systems (DBMS)  
 **Project Group:** Team 12  
 **Domain:** Precision Auto Parts (Automotive OEM Supplier Quality Division)  
+**Detailed 14-Slide Blueprint:** [`docs/07_presentation_slides_master.md`](file:///d:/DBMS_Team_12/docs/07_presentation_slides_master.md)  
 
 ---
 

@@ -117,12 +117,14 @@
 
 | # | Sub-Phase | Deliverable | Status |
 |---|-----------|-------------|--------|
-| 7.1 | 10-slide presentation blueprint | Slide titles, content outline, visual elements per slide | ✅ Done |
-| 7.2 | Speaker scripts per slide | Word-for-word talking points for 10–12 minute presentation | ✅ Done |
-| 7.3 | Viva defense Q&A bank | 5+ high-probability questions with model answers | ✅ Done |
-| 7.4 | Team role allocation | Who presents which slide, who handles Q&A | ✅ Done |
+| 7.1 | 14-slide master PPT blueprint | 1 opening + 12 core slides (2 per member across 6 members) + 1 closing | ✅ Done |
+| 7.2 | Speaker scripts per slide | Word-for-word spoken delivery for 12–15 minute defense | ✅ Done |
+| 7.3 | Visual layout & diagram blueprints | Slide layouts, diagrams, color palettes, and data tables per slide | ✅ Done |
+| 7.4 | Viva defense Q&A bank per slide | Specific professor questions & bulletproof answers for each slide | ✅ Done |
+| 7.5 | Team role allocation | Exact member assignments (Member 1 to 6) with technical roles | ✅ Done |
+| 7.6 | Automated PPTX generation | `build_pptx.py` generates `DBMS Group 12 - 1st PPT.pptx` (14 slides, official Somaiya template) | ✅ Done |
 
-**📄 Output:** [`docs/03_presentation_guide.md`](file:///d:/DBMS_Team_12/docs/03_presentation_guide.md)
+**📄 Output:** [`docs/03_presentation_guide.md`](file:///d:/DBMS_Team_12/docs/03_presentation_guide.md), [`docs/07_presentation_slides_master.md`](file:///d:/DBMS_Team_12/docs/07_presentation_slides_master.md) & [`DBMS Group 12 - 1st PPT.pptx`](file:///d:/DBMS_Team_12/DBMS%20Group%2012%20-%201st%20PPT.pptx)
 
 ---
 
@@ -211,13 +213,13 @@
 | 4 | Seed Data Population | 7 | 7 | ✅ Complete |
 | 5 | SQL Query Suite | 12 | 12 | ✅ Complete |
 | 6 | PlantUML Diagrams | 5 | 5 | ✅ Complete |
-| 7 | Presentation & Viva Guide | 4 | 4 | ✅ Complete |
+| 7 | Presentation Deck & Viva Guide | 6 | 6 | ✅ Complete |
 | 8 | Web Presentation App | 13 | 13 | ✅ Complete |
 | 9 | Local Server & Offline | 3 | 1 | ⏳ In Progress |
 | 10 | Deployment (Vercel/GH Pages) | 5 | 1 | 🔲 Pending |
 | 11 | Verification & QA | 6 | 2 | ⏳ In Progress |
 | 12 | Final Assembly & Submission | 5 | 2 | ⏳ In Progress |
-| **Total** | | **80** | **67** | **84% Complete** |
+| **Total** | | **81** | **70** | **86% Complete** |
 
 ---
 
