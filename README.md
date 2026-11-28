@@ -44,6 +44,7 @@ DBMS_Team_12/
 │   ├── 05_deployment_and_web_implementation_plan.md <-- Vercel/GitHub Pages deployment & phase-wise build plan
 │   ├── 06_master_execution_plan.md        <-- 12-Phase master checklist with 80 sub-tasks
 │   ├── 07_presentation_slides_master.md   <-- 14-Slide complete PPT master blueprint (2 slides per member)
+│   ├── 08_team_slides_content_handout.md   <-- Clean slide-by-slide copy-paste content & talking points for teammates
 │   └── Problem statement .jpeg            <-- Original assignment problem statement sheet
 ├── web/                                   <-- Interactive Web Presentation Dashboard
 │   ├── index.html                         <-- Single-Page App (Tailwind + Chart.js + sql.js WASM)
@@ -74,6 +75,7 @@ DBMS_Team_12/
 - [Deployment & Phase-Wise Implementation Plan](file:///d:/DBMS_Team_12/docs/05_deployment_and_web_implementation_plan.md)
 - [Master Execution Plan (12 Phases)](file:///d:/DBMS_Team_12/docs/06_master_execution_plan.md)
 - [**14-Slide Master PPT Blueprint (2 Slides/Member)**](file:///d:/DBMS_Team_12/docs/07_presentation_slides_master.md)
+- [**Teammate Slide Content & Presenter Handout**](file:///d:/DBMS_Team_12/docs/08_team_slides_content_handout.md)
 - [**Complete Generated Presentation Deck (.pptx)**](file:///d:/DBMS_Team_12/DBMS%20Group%2012%20-%201st%20PPT.pptx)
 - [Presentation Generator Script](file:///d:/DBMS_Team_12/build_pptx.py)
 - [**Interactive Web Dashboard**](file:///d:/DBMS_Team_12/web/index.html)

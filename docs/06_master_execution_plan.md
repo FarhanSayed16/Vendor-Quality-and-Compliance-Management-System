@@ -124,7 +124,7 @@
 | 7.5 | Team role allocation | Exact member assignments (Member 1 to 6) with technical roles | ✅ Done |
 | 7.6 | Automated PPTX generation | `build_pptx.py` generates `DBMS Group 12 - 1st PPT.pptx` (14 slides, official Somaiya template) | ✅ Done |
 
-**📄 Output:** [`docs/03_presentation_guide.md`](file:///d:/DBMS_Team_12/docs/03_presentation_guide.md), [`docs/07_presentation_slides_master.md`](file:///d:/DBMS_Team_12/docs/07_presentation_slides_master.md) & [`DBMS Group 12 - 1st PPT.pptx`](file:///d:/DBMS_Team_12/DBMS%20Group%2012%20-%201st%20PPT.pptx)
+**📄 Output:** [`docs/03_presentation_guide.md`](file:///d:/DBMS_Team_12/docs/03_presentation_guide.md), [`docs/07_presentation_slides_master.md`](file:///d:/DBMS_Team_12/docs/07_presentation_slides_master.md), [`docs/08_team_slides_content_handout.md`](file:///d:/DBMS_Team_12/docs/08_team_slides_content_handout.md) & [`DBMS Group 12 - 1st PPT.pptx`](file:///d:/DBMS_Team_12/DBMS%20Group%2012%20-%201st%20PPT.pptx)
 
 ---
 
